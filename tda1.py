@@ -49,3 +49,127 @@ G = [0, 1, 2, 3]  # simplified; TODO, construct a more meaningful example...
 # Construct and visualize the nerve from G
 nerve_complex = construct_nerve_from_graph(G)
 print("Nerve complex simplices:", list(nerve_complex.get_skeleton(2)))
+
+
+""" WIP
+import networkx as nx
+import numpy as np
+from scipy.optimize import minimize
+import gudhi
+import matplotlib.pyplot as plt
+from itertools import combinations
+
+G = nx.Graph()
+G.add_edges_from([
+    (0, 1),
+    (1, 2),
+    (2, 0)
+])
+
+def embed_graph(G, dim=4, tau=1.0):
+
+    Embed the graph G into R^dim such that:
+    - If two nodes are connected, their distance <= tau
+    - Else, their distance > tau
+
+    n = G.number_of_nodes()
+    nodes = list(G.nodes())
+    node_indices = {node: i for i, node in enumerate(nodes)}
+
+    # Initial guess: random coordinates
+    X0 = np.random.rand(n * dim)
+
+    # Define the objective function
+    def objective(X):
+        X = X.reshape((n, dim))
+        loss = 0.0
+        for i in range(n):
+            for j in range(i+1, n):
+                dist = np.linalg.norm(X[i] - X[j])
+                if G.has_edge(nodes[i], nodes[j]):
+                    if dist > tau:
+                        loss += (dist - tau)**2
+                else:
+                    if dist <= tau:
+                        loss += (tau - dist)**2
+        return loss
+
+    # Optimize
+    res = minimize(objective, X0, method='L-BFGS-B', options={'maxiter': 10000})
+
+    if not res.success:
+        raise ValueError("Failure: " + res.message)
+
+    X = res.x.reshape((n, dim))
+    return X, nodes
+
+def construct_convex_sets(X, tau=1.0):
+
+    Construct convex sets as balls in R^dim.
+    Each ball is represented by its center and radius.
+
+    radius = tau / 2
+    convex_sets = [{'center': point, 'radius': radius} for point in X]
+    return convex_sets
+
+def verify_nerve(convex_sets, original_graph, epsilon=1e-3):
+
+    Verify that the nerve of the convex sets matches the original graph.
+
+    # Construct the nerve complex
+    simplex_tree = gudhi.SimplexTree()
+
+    n = len(convex_sets)
+    for i in range(n):
+        simplex_tree.insert([i])
+
+    # Insert edges where convex sets intersect
+    for i, j in combinations(range(n), 2):
+        dist = np.linalg.norm(convex_sets[i]['center'] - convex_sets[j]['center'])
+        if dist <= (convex_sets[i]['radius'] + convex_sets[j]['radius']) + epsilon:
+            simplex_tree.insert([i, j])
+
+    # Extract edges from the nerve
+    nerve_graph = nx.Graph()
+    for i in range(n):
+        nerve_graph.add_node(i)
+
+    for simplex in simplex_tree.get_skeleton(1):
+        if len(simplex[0]) == 2:
+            nerve_graph.add_edge(simplex[0][0], simplex[0][1])
+
+    # Compare with the original graph
+    is_isomorphic = nx.is_isomorphic(original_graph, nerve_graph)
+    print(f"Nerve matches the original graph: {is_isomorphic}")
+
+    return is_isomorphic
+
+def main():
+    tau = 1.0  # threshold
+
+    X, nodes = embed_graph(G, dim=4, tau=tau)
+    print("Embedding coordinates:\n", X)
+
+    convex_sets = construct_convex_sets(X, tau=tau)
+
+    is_correct = verify_nerve(convex_sets, G)
+
+    if is_correct:
+        print("Success!")
+    else:
+        print("Failed to construct the nerve.")
+
+    # Visualization (2D)
+    from sklearn.decomposition import PCA
+    pca = PCA(n_components=2)
+    X_2d = pca.fit_transform(X)
+
+    plt.figure(figsize=(8, 6))
+    nx.draw(G, pos={i: X_2d[j] for j, i in enumerate(nodes)}, with_labels=True, node_color='lightblue', edge_color='gray')
+    plt.title("Graph Embedding Projection")
+    plt.show()
+
+if __name__ == "__main__":
+    main()
+
+"""
