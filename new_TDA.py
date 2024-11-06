@@ -24,6 +24,7 @@ G_edges = [
 
 G = edge_list_to_adjacency_list(G_edges)
 
+# embed in R4 first using optimization
 def assign_positions_and_radii(G, embedding_dim=4):
     vertices = list(G.keys())
     n = len(vertices)
@@ -41,7 +42,7 @@ def assign_positions_and_radii(G, embedding_dim=4):
     adjacency = G  # the placeholder input is already an AL, but this step is needed for processing custom inputs
 
     def objective(x):
-        # goal: minimize the sum of radii
+        # goal: minimize the sum of radii (prevents large sphered that aren't needed)
         radii = x[n * embedding_dim:]
         return np.sum(radii)
 
@@ -66,7 +67,7 @@ def assign_positions_and_radii(G, embedding_dim=4):
                     cons.append(dist - r_sum - epsilon)
         return np.array(cons)
 
-    bounds = [(-np.inf, np.inf)] * (n * embedding_dim) + [(0.1, None)] * n  # Radii >= 0.1
+    bounds = [(-np.inf, np.inf)] * (n * embedding_dim) + [(0.1, None)] * n  # radii must be >= 0.1 (to prevent collapsing to a point)
 
     cons = {'type': 'ineq', 'fun': constraints}
 
@@ -97,7 +98,7 @@ def assign_positions_and_radii(G, embedding_dim=4):
 
     return convex_sets
 
-# TODO: combine the functions
+# TODO: combine the functions!
 def refine_positions_and_radii_in_R3(convex_sets, G):
     vertices = list(convex_sets.keys())
     n = len(vertices)
@@ -111,11 +112,11 @@ def refine_positions_and_radii_in_R3(convex_sets, G):
 
     adjacency = G # already AL
 
-    def objective(x):
+    def objective(x): # copied from the original function
         radii = x[n * embedding_dim:]
         return np.sum(radii)
 
-    def constraints(x):
+    def constraints(x): # same
         positions = x[:n * embedding_dim].reshape((n, embedding_dim))
         radii = x[n * embedding_dim:]
         cons = []
