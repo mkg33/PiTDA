@@ -71,6 +71,7 @@ def assign_positions_and_radii(G, embedding_dim=4):
 
     cons = {'type': 'ineq', 'fun': constraints}
 
+    # we use sequential least squares programming from scipy
     res = minimize(
         objective, x0, method='SLSQP', bounds=bounds, constraints=cons,
         options={'maxiter': 5000, 'ftol': 1e-9}
