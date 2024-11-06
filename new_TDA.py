@@ -4,7 +4,13 @@ from scipy.optimize import minimize
 from gudhi import SimplexTree
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import PCA
+
 # potential problem: everything depends on the initial optimization result
+
+# assumption: convex polytope
+# check weird examples
+# convex polytopes in R4 (nerve) -> projection
+# pick random vertices of convex polytope
 
 def edge_list_to_adjacency_list(edge_list):
     adjacency = {}
@@ -43,7 +49,7 @@ def assign_positions_and_radii(G, embedding_dim=4):
     adjacency = G  # the placeholder input is already an AL, but this step is needed for processing custom inputs
 
     def objective(x):
-        # goal: minimize the sum of radii (prevents large sphered that aren't needed)
+        # goal: minimize the sum of radii (prevents large spheres that aren't needed)
         radii = x[n * embedding_dim:]
         return np.sum(radii)
 
