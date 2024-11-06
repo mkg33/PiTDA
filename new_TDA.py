@@ -4,6 +4,7 @@ from scipy.optimize import minimize
 from gudhi import SimplexTree
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import PCA
+# potential problem: everything depends on the initial optimization result
 
 def edge_list_to_adjacency_list(edge_list):
     adjacency = {}
@@ -85,7 +86,7 @@ def assign_positions_and_radii(G, embedding_dim=4):
     positions_opt = x_opt[:n * embedding_dim].reshape((n, embedding_dim))
     radii_opt = x_opt[n * embedding_dim:]
 
-    # project to R3
+    # project to R3 via PCA
     if embedding_dim > projection_dim:
         pca = PCA(n_components=projection_dim)
         positions_proj = pca.fit_transform(positions_opt)
