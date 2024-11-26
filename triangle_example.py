@@ -36,6 +36,7 @@ while  counter_1 <= 1000:
         cover=cover,
         clusterer=clusterer
     )
+
     #plt.figure()
     #fig = mp.plot_static_mapper_graph(pipe, data, color_data=data[:,1])
     #fig.show()
