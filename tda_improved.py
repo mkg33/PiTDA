@@ -5,6 +5,12 @@ from gudhi import SimplexTree
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.manifold import MDS
 
+# check if the search space can be constrained (=> convex polytope)
+# plotly
+# compare solutions (https://arxiv.org/abs/1102.0417; 3.1)
+# add more complex examples
+
+
 def edge_list_to_adjacency_list(edge_list):
     adjacency = {}
     for u, v in edge_list:
