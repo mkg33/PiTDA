@@ -19,7 +19,7 @@ Examples: '1', '1-5', '10 15 20-25'.
 USAGE: python3.12 tda_final.py -t 40-100.
 If you type a test case greater than 60, the code will automatically generate
 further examples with random regular graphs (see function below).
-You can set the parameters yourself (number of notes and graph degree)
+You can set the parameters yourself (number of nodes and graph degree)
 by modifying the code below (where the add_random_regular_test_cases function is called).
 
 OPTIONAL: pass the parameter -nv to disable visualization.
