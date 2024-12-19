@@ -10,6 +10,27 @@ from itertools import combinations
 import time
 import concurrent
 
+"""
+USAGE: python3.12 tda_final.py
+Note: tested with 3.12 because there were setup problems with Gudhi when using 3.13.
+
+OPTIONAL: Specify test cases to run by their numbers or ranges.
+Examples: '1', '1-5', '10 15 20-25'.
+USAGE: python3.12 tda_final.py -t 40-100.
+If you type a test case greater than 60, the code will automatically generate
+further examples with random regular graphs (see function below).
+You can set the parameters yourself (number of notes and graph degree)
+by modifying the code below (where the add_random_regular_test_cases function is called).
+
+OPTIONAL: pass the parameter -nv to disable visualization.
+Note that visualization is available exclusively for planar graphs.
+USAGE: python3.12 tda_final.py -t 40-100 -nv.
+
+OPTIONAL: pass the parameter -a to abort the computation once the timeout has been reached.
+Timeout: 600 seconds (10 minutes) by default. You can modify it yourself below and set it to a custom value, if you wish.
+USAGE: python3.12 tda_final.py -t 40-100 -nv -a.
+"""
+
 def add_random_regular_test_cases(test_cases, start_n=5, d=4, num_cases=40, increment=5):
     """
     Adds Random Regular Graph from networkx test cases to the existing test_cases list.
@@ -964,7 +985,7 @@ def main():
         }
     ]
 
-    add_random_regular_test_cases(test_cases, start_n=5, d=4, num_cases=40, increment=5)
+    add_random_regular_test_cases(test_cases, start_n=5, d=8, num_cases=40, increment=5)
 
 
     # Test Case 19: Random Geometric Graph G(20, r=0.3)
@@ -1037,10 +1058,7 @@ def main():
 
     abort = args.abort
 
-    if args.no_visualization != "":
-        visualize = not args.no_visualization
-    else:
-        visualize = True
+    visualize = not args.no_visualization
 
     def parse_test_cases(selection, max_test):
         selected = set()
@@ -1100,7 +1118,7 @@ def main():
                 test_case['edges'],
                 test_case['title'],
                 test_case['multigraph'],
-                visualize=True
+                visualize=visualize
             )
             try:
                 test_passed, duration = future.result(timeout=600)
