@@ -12,6 +12,8 @@ from sklearn.svm import SVR
 from sklearn.preprocessing import StandardScaler
 import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
+import pandas as pd
+import csv
 
 
 
@@ -25,6 +27,10 @@ long_distance = []
 overlap_matrix_PCA = []
 overlap_matrix_projection = []
 distance_matrix = []
+x_matrix = []
+y1_matrix = []
+y2_matrix = []
+y3_matrix = []
 counter_1 = 1
 while counter_1 < 1000:
     l_PCA = 0.5
@@ -95,12 +101,29 @@ while counter_1 < 1000:
     short_distance.append(distance_1)
     long_distance.append(distance_2)
     distance_matrix.append([distance_1, distance_2])
+    x_matrix.append(x)
+    y1_matrix.append(y1)
+    y2_matrix.append(y2)
+    y3_matrix.append(y3)
     counter_1 += 1
     print(counter_1)
+    
+    
 
+saved_file = pd.DataFrame({"short_distance": short_distance, 
+                           "long_distance": long_distance, 
+                           "x_value": x_matrix, 
+                           "y1_value": y1_matrix, 
+                           "y2_value": y2_matrix, 
+                           "y3_value": y3_matrix, 
+                           "DB_scan_overlap": overlap_matrix_projection})
+saved_file.to_csv("tda_experiment_data.csv", index = False)
 
 plt.figure()
 ax = plt.axes(projection= '3d')
 #ax.scatter3D(short_distance, long_distance, overlap_matrix_PCA, color = 'red')
-ax.scatter3D(short_distance, long_distance, overlap_matrix_projection, color = 'blue')       
+ax.scatter3D(short_distance, long_distance, overlap_matrix_projection, color = 'blue')
+ax.set_xlabel("Distance Between Close Points")
+ax.set_ylabel("Distance Between Middle and Third Point")
+ax.set_zlabel("Minimum Overlap Fraction")       
 plt.show()
