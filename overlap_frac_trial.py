@@ -1,4 +1,3 @@
-#bisection algorithm attempt?
 from sklearn import datasets
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
@@ -13,6 +12,7 @@ import igraph as ig
 counter_1 = 1
 counter_2 = 0.999
 connected_components_counts = []
+
 x = np.random.uniform(0,100)
 y1 = np.random.uniform(0,10)
 y2 = np.random.uniform(0,10)
